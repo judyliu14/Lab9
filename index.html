@@ -55,6 +55,14 @@
     <button>Trigger a Global Error</button>
   </section>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "34472fd3ffc24c6cb9c57a266d1ae822"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>
+                        
   <script>
     let calculateBtn = document.querySelector('#calculate');
     calculateBtn.addEventListener('click', () => {
@@ -62,11 +70,74 @@
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      try {
+        output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
+      } catch(err) {
+        console.error('Error: evaluation failed');
+      } finally {
+        console.log('Finally');
+      }
     });
+
+    window.onerror = (message, source, lineno, colno, err) => {
+      console.log(`Error caught at line ${lineno}!`)
+      console.log(message);
+    }
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
     // TODO - Make buttons functional
+    errorBtns[0].addEventListener('click', function() {
+      console.log('Console Log Demo');
+    });
+    errorBtns[1].addEventListener('click', function() {
+      console.error('Console Error Demo');
+    });
+    errorBtns[2].addEventListener('click', function() {
+      console.dir(errorBtns[3]);
+    });
+    errorBtns[3].addEventListener('click', function() {
+      console.dirxml(document.body);
+    });
+    errorBtns[4].addEventListener('click', function() {
+      console.group('Log Group');
+    });
+    errorBtns[5].addEventListener('click', function() {
+      console.groupEnd('Log Group');
+    });
+    errorBtns[6].addEventListener('click', function() {
+      console.table([
+        { name: "Software Engineering", num: 110 },
+        { name: "Programming Languages", num: 130 },
+        { name: "Advanced Software Engineering", num: 112 }
+      ]);
+    });
+    errorBtns[7].addEventListener('click', function() {
+      console.log("Timer started!");
+      console.time();
+    });
+    errorBtns[8].addEventListener('click', function() {
+      console.log("Timer ended!");
+      console.timeEnd();
+    });
+    errorBtns[9].addEventListener('click', function() {
+      const traceTest = () => { deep(); };
+      const deep = () => { deeper(); };
+      const deeper = () => { deepest(); };
+      const deepest = () => { console.trace(); };
+      traceTest();
+    });
+    class CustomError extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "CustomError";
+      }
+    }
+    function throwCustomError() {
+      throw new CustomError("Oops!");
+    }
+    errorBtns[10].addEventListener('click', function() {
+      throwCustomError();
+    });
   </script>
 </body>
 </html>
